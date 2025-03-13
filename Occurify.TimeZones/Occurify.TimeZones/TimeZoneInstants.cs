@@ -71,26 +71,38 @@ public static class TimeZoneInstants
     /// </summary>
     public static ITimeline DailyAt(int hour, int minute, int second, int millisecond) => DailyAt(new TimeOnly(hour, minute, second, millisecond));
 
+#if NET7_0 || NET8_0 || NET9_0
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with one instant every day at the provided time in <see cref="TimeZoneInfo.Local"/>.
     /// </summary>
     public static ITimeline DailyAt(int hour, int minute, int second, int millisecond, int microsecond) => DailyAt(new TimeOnly(hour, minute, second, millisecond, microsecond));
+#endif
 
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with one instant every day at <paramref name="timeOfDay"/> in provided timezone <paramref name="timeZone"/>.
     /// </summary>
     public static ITimeline DailyAt(TimeOnly timeOfDay, TimeZoneInfo timeZone)
     {
+#if NET7_0 || NET8_0 || NET9_0
         if (timeOfDay.Millisecond != 0 || timeOfDay.Microsecond != 0 || timeOfDay.Nanosecond != 0)
         {
             return FromCron(new TimeOnly(timeOfDay.Hour, timeOfDay.Minute, timeOfDay.Second).ToCronExpression())
                 .Offset(
-                    TimeSpan.FromMilliseconds(timeOfDay.Millisecond) + 
-                    TimeSpan.FromMicroseconds(timeOfDay.Microsecond) + 
+                    TimeSpan.FromMilliseconds(timeOfDay.Millisecond) +
+                    TimeSpan.FromMicroseconds(timeOfDay.Microsecond) +
                     TimeSpan.FromTicks(timeOfDay.Nanosecond / 100))
                 .Within(TimeZonePeriods.Days(timeZone));
         }
-        
+#else
+        if (timeOfDay.Millisecond != 0)
+        {
+            return FromCron(new TimeOnly(timeOfDay.Hour, timeOfDay.Minute, timeOfDay.Second).ToCronExpression())
+                .Offset(
+                    TimeSpan.FromMilliseconds(timeOfDay.Millisecond))
+                .Within(TimeZonePeriods.Days(timeZone));
+        }
+#endif
+
         return new CronTimeline(timeOfDay.ToCronExpression(), timeZone)
             .Within(TimeZonePeriods.Days(timeZone));
     }
@@ -115,10 +127,12 @@ public static class TimeZoneInstants
     /// </summary>
     public static ITimeline DailyAt(int hour, int minute, int second, int millisecond, TimeZoneInfo timeZone) => DailyAt(new TimeOnly(hour, minute, second, millisecond), timeZone);
 
+#if NET7_0 || NET8_0 || NET9_0
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with one instant every day at the provided time in provided timezone <paramref name="timeZone"/>.
     /// </summary>
     public static ITimeline DailyAt(int hour, int minute, int second, int millisecond, int microsecond, TimeZoneInfo timeZone) => DailyAt(new TimeOnly(hour, minute, second, millisecond, microsecond), timeZone);
+#endif
 
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with one instant every second.
@@ -188,13 +202,13 @@ public static class TimeZoneInstants
     /// Returns a <see cref="ITimeline"/> with an instant at the start of <paramref name="dayOfWeek"/> in <see cref="TimeZoneInfo.Local"/>.
     /// </summary>
     public static ITimeline StartOfDays(DayOfWeek dayOfWeek) =>
-        StartOfDays([dayOfWeek], TimeZoneInfo.Local);
+        StartOfDays(new[] { dayOfWeek }, TimeZoneInfo.Local);
 
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with an instant at the start of <paramref name="dayOfWeek"/> in provided timezone <paramref name="timeZone"/>.
     /// </summary>
     public static ITimeline StartOfDays(DayOfWeek dayOfWeek, TimeZoneInfo timeZone) =>
-        StartOfDays([dayOfWeek], timeZone);
+        StartOfDays(new[] { dayOfWeek }, timeZone);
 
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with an instant at the start of every day specified in <paramref name="daysOfWeek"/> in <see cref="TimeZoneInfo.Local"/>.
@@ -242,14 +256,14 @@ public static class TimeZoneInstants
     /// Returns a <see cref="ITimeline"/> with an instant at the end of <paramref name="dayOfWeek"/> in <see cref="TimeZoneInfo.Local"/>.
     /// </summary>
     public static ITimeline EndOfDays(DayOfWeek dayOfWeek) =>
-        EndOfDays([dayOfWeek], TimeZoneInfo.Local);
+        EndOfDays(new[] { dayOfWeek }, TimeZoneInfo.Local);
 
 
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with an instant at the end of <paramref name="dayOfWeek"/> in provided timezone <paramref name="timeZone"/>.
     /// </summary>
     public static ITimeline EndOfDays(DayOfWeek dayOfWeek, TimeZoneInfo timeZone) =>
-        EndOfDays([dayOfWeek], timeZone);
+        EndOfDays(new[] { dayOfWeek }, timeZone);
 
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with an instant at the end of every day specified in <paramref name="daysOfWeek"/> in <see cref="TimeZoneInfo.Local"/>.
@@ -342,13 +356,13 @@ public static class TimeZoneInstants
     /// Returns a <see cref="ITimeline"/> with an instant at the start of <paramref name="month"/> in <see cref="TimeZoneInfo.Local"/>.
     /// </summary>
     public static ITimeline StartOfMonths(int month) =>
-        StartOfMonths([month], TimeZoneInfo.Local);
+        StartOfMonths(new[] { month }, TimeZoneInfo.Local);
 
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with an instant at the start of <paramref name="month"/> in provided timezone <paramref name="timeZone"/>.
     /// </summary>
     public static ITimeline StartOfMonths(int month, TimeZoneInfo timeZone) =>
-        StartOfMonths([month], timeZone);
+        StartOfMonths(new[] { month }, timeZone);
 
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with an instant at the start of every month specified in <paramref name="months"/> in <see cref="TimeZoneInfo.Local"/>.
@@ -396,13 +410,13 @@ public static class TimeZoneInstants
     /// Returns a <see cref="ITimeline"/> with an instant at the end of <paramref name="month"/> in <see cref="TimeZoneInfo.Local"/>.
     /// </summary>
     public static ITimeline EndOfMonths(int month) =>
-        EndOfMonths([month], TimeZoneInfo.Local);
+        EndOfMonths(new[] { month }, TimeZoneInfo.Local);
 
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with an instant at the end of <paramref name="month"/> in provided timezone <paramref name="timeZone"/>.
     /// </summary>
     public static ITimeline EndOfMonths(int month, TimeZoneInfo timeZone) =>
-        EndOfMonths([month], timeZone);
+        EndOfMonths(new[] { month }, timeZone);
 
     /// <summary>
     /// Returns a <see cref="ITimeline"/> with an instant at the end of every month specified in <paramref name="months"/> in <see cref="TimeZoneInfo.Local"/>.

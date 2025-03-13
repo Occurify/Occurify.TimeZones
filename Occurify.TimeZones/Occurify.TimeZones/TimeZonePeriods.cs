@@ -127,7 +127,7 @@ namespace Occurify.TimeZones
         /// <summary>
         /// Returns a <see cref="IPeriodTimeline"/> with days <paramref name="dayOfWeek"/> in provided timezone <paramref name="timeZone"/>.
         /// </summary>
-        public static IPeriodTimeline Days(DayOfWeek dayOfWeek, TimeZoneInfo timeZone) => Days([dayOfWeek], timeZone);
+        public static IPeriodTimeline Days(DayOfWeek dayOfWeek, TimeZoneInfo timeZone) => Days(new[] { dayOfWeek }, timeZone);
 
         /// <summary>
         /// Returns a <see cref="IPeriodTimeline"/> with days <paramref name="daysOfWeek"/> in <see cref="TimeZoneInfo.Local"/>.
@@ -261,7 +261,7 @@ namespace Occurify.TimeZones
         /// <summary>
         /// Returns a <see cref="IPeriodTimeline"/> with months <paramref name="month"/> in provided timezone <paramref name="timeZone"/>.
         /// </summary>
-        public static IPeriodTimeline Months(int month, TimeZoneInfo timeZone) => Months([month], TimeZoneInfo.Local);
+        public static IPeriodTimeline Months(int month, TimeZoneInfo timeZone) => Months(new[] { month }, TimeZoneInfo.Local);
 
         /// <summary>
         /// Returns a <see cref="IPeriodTimeline"/> with months <paramref name="months"/> in <see cref="TimeZoneInfo.Local"/>.
@@ -363,7 +363,7 @@ namespace Occurify.TimeZones
         /// </summary>
         public static IPeriodTimeline Weekends(TimeZoneInfo timeZone)
         {
-            return Days([DayOfWeek.Saturday, DayOfWeek.Sunday], timeZone);
+            return Days(new[] { DayOfWeek.Saturday, DayOfWeek.Sunday }, timeZone);
         }
 
         /// <summary>
@@ -418,7 +418,7 @@ namespace Occurify.TimeZones
         /// </summary>
         public static IPeriodTimeline Workdays(TimeZoneInfo timeZone)
         {
-            return Days([DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday], timeZone);
+            return Days(new[] { DayOfWeek.Monday, DayOfWeek.Tuesday, DayOfWeek.Wednesday, DayOfWeek.Thursday, DayOfWeek.Friday }, timeZone);
         }
 
         /// <summary>
